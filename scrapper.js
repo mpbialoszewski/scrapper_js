@@ -3,6 +3,9 @@ const cheerio = require('cheerio');
 const readline = require('readline');
 
 
+// Placeholder for knwl 
+// const knwl = require('knwl');
+
 let userAnswer;
 const domain = 'somecompany.com'
 const rl = readline.createInterface({
@@ -22,15 +25,15 @@ async function Scrapper(userAnswer){
 
     try{
         answerFetch
-        console.log(`Email provided: ${userAnswer} belongs to domain ${domain}`)
+        console.log(`Email provided: ${userAnswer} belongs to domain ${domain}`);
 
-    const fileName = 'data-acquisition-2023-08-15_18:20'
+    const fileName = 'data-acquisition-2023-08-15_18:20';
     const waitTime = console.log('Processing data, please wait....');
-    const delay = pr => new Promise ( resolve => setTimeout(resolve,pr))
+    const delay = pr => new Promise ( resolve => setTimeout(resolve,pr));
     waitTime
 delay(3000).then(()=>{
     console.log(sampleAnswer);
-    console.log(`File saved. Name of the file is ${fileName}`)
+    console.log(`File saved. Name of the file is ${fileName}`);
     answerFetch();
     
 });
@@ -43,7 +46,7 @@ function answerFetch(){
     rl.question('Please enter e-mail address:', userAnswer =>{
    //https://www.w3schools.com/jsref/jsref_regexp_test.asp
     if (!emailRegEx.test(userAnswer)){
-        console.log('Incorrect email address provided. Please try again')
+        console.log('Incorrect email address provided. Please try again');
         answerFetch();
     }else
     {
