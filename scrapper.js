@@ -1,42 +1,59 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const rl = require('readline');
+const readline = require('readline');
 
 
-/*
-var Knwl = require("./knwl.js");
-var knwlInstance = new Knwl('english');
+let userAnswer;
+const domain = 'somecompany.com'
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  const emailRegEx = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
-This module doesn't work, Error: Cannot find module './knwl.js'
-npm i knwl.js doesn't help neither installing it globally.
-Tried it on Windows 11 and MacOS Mojave
-*/
-// What is the best way to use the regex ? I know that knwl.js has the good validation code for that 
-async function Scrapper(){
-const emailRegEx = "/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/"
 
-const sampleAnswer= {
+ const sampleAnswer= {
     1: 'alison@somecompany.com',
     2: 'john@somecompany.com',
     3: 'mark@somecompany.com'
-
 }
-//Placeholder 
-const domain = 'somecompany.com'
 
+async function Scrapper(userAnswer){
 
-console.log('Please enter e-mail address:');
-console.log(`Email provided: alison@somecompany.com, belongs to domain ${domain}`)
-const waitTime = console.log('Processing data, please wait....');
-const delay = pr => new Promise ( resolve => setTimeout(resolve,pr))
+    try{
+        answerFetch
+        console.log(`Email provided: ${userAnswer} belongs to domain ${domain}`)
+
+    const fileName = 'data-acquisition-2023-08-15_18:20'
+    const waitTime = console.log('Processing data, please wait....');
+    const delay = pr => new Promise ( resolve => setTimeout(resolve,pr))
     waitTime
 delay(3000).then(()=>{
     console.log(sampleAnswer);
+    console.log(`File saved. Name of the file is ${fileName}`)
+    answerFetch();
     
 });
+    } catch(e){
+        console.error(e)
+    }
 
 }
-Scrapper();
+function answerFetch(){
+    rl.question('Please enter e-mail address:', userAnswer =>{
+   //https://www.w3schools.com/jsref/jsref_regexp_test.asp
+    if (!emailRegEx.test(userAnswer)){
+        console.log('Incorrect email address provided. Please try again')
+        answerFetch();
+    }else
+    {
+        Scrapper(userAnswer);
+    }
+    });
+}
+
+answerFetch();
+
 
 /* Objectives 
 
@@ -44,14 +61,10 @@ We often get email addresses from
 our clients (ex: alison@somecompany.com).
 Given this data we’d really 
 like to obtain additional information 
-about the company (Address, Phone Number,
-     Other Email Addresses etc…).
-The task is to build a Node.js 
-console based web-scraper - 
-which given an email address, 
-visits the web-page and programmatically 
-extracts any relevant information to 
-echo to the screen.
+about the company (Address, Phone Number, Other Email Addresses etc…).
+The task is to build a Node.js console based web-scraper - 
+which given an email address, visits the web-page and programmatically 
+extracts any relevant information to echo to the screen.
 
 
 1. User provides the e-mail address as string literal
