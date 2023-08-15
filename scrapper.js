@@ -23,7 +23,6 @@ const rl = readline.createInterface({
         return parts[1];
       }
     }
-    throw new Error('Invalid email format');
 }
 
  const sampleAnswer= {
@@ -95,8 +94,9 @@ answerFetch();
 1. User provides the e-mail address as string literal // DONE 
 2. Checking if the input provided is a valid e-mail address, if not - return error and come back to previous task  // DONE 
 3. IF email address is valid- take the chunk of domain and store is as variable // DONE 
-4 The scrapper goes to the website and searches any email addresses related to that domain 
-5. The email addresses are parsed and exported to the file (what file? Do we store it locally ? Or we just show the results in console ?)
+4 The scrapper fetches the website address and establishes connection // DONE 
+5. The website iterates through the website and searches for e-mail addresses (us)
+6. The email addresses are parsed and logged to the console. 
 
 
 Additonal objectives 
