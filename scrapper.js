@@ -35,9 +35,22 @@ const rl = readline.createInterface({
 async function Scrapper(userAnswer){
 
     try{
+        const domainName = extractDomainName(userAnswer);
+        const response = await axios.get(`https://${domainName}`);
+        console.log(`Response:${response.status}`)
+        // Check if the response status is successful (2xx)
+        if (response.status >= 200 && response.status < 300) {
+            const html = response.data;
+            const $ = cheerio.load(html);
+           
+        }
+        else {
+            console.log('Failed to connect to website. This could be related to CORS policy. Try again.');  
+            }
+    
         let startTime = performance.now();
         answerFetch
-        const domainName = extractDomainName(userAnswer);
+ 
         console.log(`Email provided: ${userAnswer} belongs to domain ${domainName}`);
 
         const endTime = performance.now();
@@ -84,28 +97,7 @@ answerFetch();
 3. IF email address is valid- take the chunk of domain and store is as variable // DONE 
 4 The scrapper goes to the website and searches any email addresses related to that domain 
 5. The email addresses are parsed and exported to the file (what file? Do we store it locally ? Or we just show the results in console ?)
-Q1. Question - Do we narrow our searches only 
- to e-mail address or also name and phone number ?
-Q2. Do I need store that data in some form (such as JSON or CSV file? )
 
-
-Example startup
-
-Please enter e-mail address searched 
-...
-Loading
-
-Results
-1. (email)
-2. (email)
-
-ELSE 
-
-No results found, please check your input and try again.
-
-WRONG INPUT PROVIDED: 
-
-Wrong input provded, please check if you provided valid e-mail address and try again.
 
 Additonal objectives 
 1. Provide date when the scrape was performed 
