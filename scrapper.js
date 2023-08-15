@@ -2,18 +2,29 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const readline = require('readline');
 
-
-// Placeholder for knwl 
-// const knwl = require('knwl');
+var Knwl = require('knwl.js');
 
 let userAnswer;
-const domain = 'somecompany.com'
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
-  const emailRegEx = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
+
+  function extractDomainName(email) {
+    const knwlInstance = new Knwl();
+    knwlInstance.init(email);
+    
+    const emails = knwlInstance.get('emails');
+    if (emails.length === 1) {
+      const parts = emails[0].address.split('@');
+      if (parts.length === 2) {
+        return parts[1];
+      }
+    }
+    throw new Error('Invalid email format');
+}
 
  const sampleAnswer= {
     1: 'alison@somecompany.com',
@@ -24,16 +35,22 @@ const rl = readline.createInterface({
 async function Scrapper(userAnswer){
 
     try{
+        let startTime = performance.now();
         answerFetch
-        console.log(`Email provided: ${userAnswer} belongs to domain ${domain}`);
+        const domainName = extractDomainName(userAnswer);
+        console.log(`Email provided: ${userAnswer} belongs to domain ${domainName}`);
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
 
     const fileName = 'data-acquisition-2023-08-15_18:20';
     const waitTime = console.log('Processing data, please wait....');
     const delay = pr => new Promise ( resolve => setTimeout(resolve,pr));
     waitTime
-delay(3000).then(()=>{
+delay(duration).then(()=>{
     console.log(sampleAnswer);
     console.log(`File saved. Name of the file is ${fileName}`);
+    console.log(`Time spent ${duration.toFixed(2)} miliseconds`)
     answerFetch();
     
 });
@@ -42,37 +59,29 @@ delay(3000).then(()=>{
     }
 
 }
-function answerFetch(){
-    rl.question('Please enter e-mail address:', userAnswer =>{
-   //https://www.w3schools.com/jsref/jsref_regexp_test.asp
-    if (!emailRegEx.test(userAnswer)){
+function answerFetch() {
+    rl.question('Please enter e-mail address: ', (userAnswer) => {
+      const knwlInstance = new Knwl();
+      knwlInstance.init(userAnswer);
+  
+      const emails = knwlInstance.get('emails');
+      if (emails.length === 1 && emails[0].address === userAnswer) {
+        Scrapper(userAnswer);
+      } else {
         console.log('Incorrect email address provided. Please try again');
         answerFetch();
-    }else
-    {
-        Scrapper(userAnswer);
-    }
+      }
     });
-}
+  }
 
 answerFetch();
 
 
 /* Objectives 
 
-We often get email addresses from 
-our clients (ex: alison@somecompany.com).
-Given this data we’d really 
-like to obtain additional information 
-about the company (Address, Phone Number, Other Email Addresses etc…).
-The task is to build a Node.js console based web-scraper - 
-which given an email address, visits the web-page and programmatically 
-extracts any relevant information to echo to the screen.
-
-
-1. User provides the e-mail address as string literal
-2. Checking if the input provided is a valid e-mail address, if not - return error and come back to previous task 
-3. IF email address is valid- take the chunk of domain and store is as variable 
+1. User provides the e-mail address as string literal // DONE 
+2. Checking if the input provided is a valid e-mail address, if not - return error and come back to previous task  // DONE 
+3. IF email address is valid- take the chunk of domain and store is as variable // DONE 
 4 The scrapper goes to the website and searches any email addresses related to that domain 
 5. The email addresses are parsed and exported to the file (what file? Do we store it locally ? Or we just show the results in console ?)
 Q1. Question - Do we narrow our searches only 
