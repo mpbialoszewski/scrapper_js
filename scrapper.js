@@ -24,14 +24,13 @@ const rl = readline.createInterface({
       if (parts.length === 2) {
         return parts[1];
       }
-      for (const email of emails) {
         emailAddresses.push(email.address);
-      }
     }
 }
 async function Scrapper(userAnswer){
 
     try{
+        let startTime = performance.now();
         const domainName = extractDomainName(userAnswer);
         const response = await axios.get(`https://${domainName}`);
         console.log(`Response:${response.status}`)
@@ -53,13 +52,8 @@ async function Scrapper(userAnswer){
               console.error('No email addresses found related to that domain. Please try again');
               answerFetch();
             }
+          }
 
-        } else 
-        {
-            console.log('Failed to connect to website. This could be related to CORS policy. Try again.');
-        }
-      
-        let startTime = performance.now();
         answerFetch
  
         console.log(`Email provided: ${userAnswer} belongs to domain ${domainName}`);
@@ -112,5 +106,5 @@ Additonal objectives
 2. Transform the data fetched into more readable data (JSON.Stringify) // TODO 
 3. Add comments on the technologies used // TODO 
 4. Add automatic tests // TODO 
-5. Add README.md for documentation // TODO 
+5. Add README.md for documentation // TODO
 */
