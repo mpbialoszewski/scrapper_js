@@ -5,6 +5,7 @@ const readline = require('readline');
 var Knwl = require('knwl.js');
 
 let userAnswer;
+let emailAddresses = [];
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -19,18 +20,15 @@ const rl = readline.createInterface({
     const emails = knwlInstance.get('emails');
     if (emails.length === 1) {
       const parts = emails[0].address.split('@');
+      console.log(parts)
       if (parts.length === 2) {
         return parts[1];
       }
+      for (const email of emails) {
+        emailAddresses.push(email.address);
+      }
     }
 }
-
- const sampleAnswer= {
-    1: 'alison@somecompany.com',
-    2: 'john@somecompany.com',
-    3: 'mark@somecompany.com'
-}
-
 async function Scrapper(userAnswer){
 
     try{
@@ -41,33 +39,43 @@ async function Scrapper(userAnswer){
         if (response.status >= 200 && response.status < 300) {
             const html = response.data;
             const $ = cheerio.load(html);
-           
-        }
-        else {
-            console.log('Failed to connect to website. This could be related to CORS policy. Try again.');  
+            const htmlText = $('body').text();
+
+            const knwlInstance = new Knwl();
+            knwlInstance.init(htmlText);
+
+            const emails = knwlInstance.get('emails');
+            const emailAddresses = emails.map(email => email.address);
+            if (emailAddresses.length > 0){
+              console.log('Scraped email addresses:', emailAddresses);
+            } else 
+            {
+              console.error('No email addresses found related to that domain. Please try again');
+              answerFetch();
             }
-    
+
+        } else 
+        {
+            console.log('Failed to connect to website. This could be related to CORS policy. Try again.');
+        }
+      
         let startTime = performance.now();
         answerFetch
  
         console.log(`Email provided: ${userAnswer} belongs to domain ${domainName}`);
-
         const endTime = performance.now();
         const duration = endTime - startTime;
-
-    const fileName = 'data-acquisition-2023-08-15_18:20';
-    const waitTime = console.log('Processing data, please wait....');
+        
     const delay = pr => new Promise ( resolve => setTimeout(resolve,pr));
-    waitTime
 delay(duration).then(()=>{
-    console.log(sampleAnswer);
-    console.log(`File saved. Name of the file is ${fileName}`);
     console.log(`Time spent ${duration.toFixed(2)} miliseconds`)
     answerFetch();
     
 });
-    } catch(e){
-        console.error(e)
+    } catch (error) {
+      console.error('Failed to fetch website:', error.message)
+      console.log('Please check if the input provided is correct and try again.');
+      answerFetch();
     }
 
 }
