@@ -1,16 +1,27 @@
+// Additonal objectives 
+// 1. Provide date when the scrape was performed // TODO
+// 2. Transform the data fetched into more readable data (JSON.Stringify) // TODO 
+// 3. Add comments on the technologies used // TODO 
+// 4. Add automatic tests // TODO 
+// 5. Add README.md for documentation // TODO
+// */
+
+
 const axios = require('axios');
 const cheerio = require('cheerio');
 const readline = require('readline');
 
 const Knwl = require('knwl.js');
 
+// Initilising user input 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
 
+//Extracting domain name from the e-mail by splitting it in half
 function extractDomainName(email) {
-    const knwlInstance = new Knwl();
+    const knwlInstance = new Knwl('english');
     knwlInstance.init(email);
 
     const emails = knwlInstance.get('emails');
@@ -43,38 +54,30 @@ async function Scrapper(userAnswer) {
             const $ = cheerio.load(html);
             const htmlText = $('body').text();
 
-            const knwlInstance = new Knwl();
+            //Setting parameters for parsing data 
+            const knwlInstance = new Knwl('english');
+            knwlInstance.register('places', require('knwl.js/default_plugins/places'));
+            knwlInstance.register('phones', require('knwl.js/default_plugins/phones'));
             knwlInstance.init(htmlText);
-
             const emails = knwlInstance.get('emails');
             const phoneNumbers = knwlInstance.get('phones');
             const addresses = knwlInstance.get('places');
 
+            //Removing duplicates 
             const uniqueEmailAddresses = new Set(emails.map(email => email.address));
-            const uniquePhoneNumbers = new Set(phoneNumbers.map(phone => phone.address));
-            const uniqueAddresses = new Set(addresses.map(adr => adr.address));
-
-            // const results  = -[uniqueEmailAddresses, uniquePhoneNumbers, uniqueAddresses]
+            const uniquePhoneNumbers = new Set(phoneNumbers.map(phone => phone.phone));
+            const uniqueAddresses = new Set(addresses.map(adr => adr.place));
 
             console.log('Scraped data:');
-            Array.from(uniqueEmailAddresses).length > 0 ? console.log('Emails found:', Array.from(uniqueEmailAddresses)) : console.log('No emails found.');
-            Array.from(uniquePhoneNumbers).length > 0 ? console.log('Phones found:', Array.from(uniquePhoneNumbers)) : console.log('No phone numbers found.');
-            Array.from(uniqueAddresses).length > 0 ? console.log('Addresses found :', Array.from(uniqueAddresses)) : console.log('No places/addresses found.');
-
-
-            // console.log('Phones:', Array.from(uniquePhoneNumbers));
-            // console.log('Addresses:', Array.from(uniqueAddresses));
-
-
-
-                // console.error('No results found related to that domain. Please try again');
-
+            Array.from(uniqueEmailAddresses).length > 0 ? console.log(`Emails found:${uniqueEmailAddresses.size} ->`, Array.from(uniqueEmailAddresses).join(', ')) : console.log('No results for emails have been found.');
+            Array.from(uniquePhoneNumbers).length > 0 ? console.log(`Phones found:${uniquePhoneNumbers.size} ->`, Array.from(uniquePhoneNumbers).join(', ')) : console.log('No results for phone numbers have been found.');
+            Array.from(uniqueAddresses).length > 0 ? console.log(`Addresses found:${uniqueAddresses.size} ->`, Array.from(uniqueAddresses).join(', ')) : console.log('No results for addresses / places have been found.');
         }
 
-        
+
         const endTime = performance.now();
         const duration = endTime - startTime;
-
+        // Sending response based on the time spent on scraping 
         const delay = pr => new Promise(resolve => setTimeout(resolve, pr));
         delay(duration).then(() => {
             console.log(`Time spent ${duration.toFixed(2)} milliseconds`);
@@ -90,6 +93,7 @@ async function Scrapper(userAnswer) {
 function answerFetch() {
     rl.question('Please enter e-mail address: ', (userAnswer) => {
         const knwlInstance = new Knwl();
+
         knwlInstance.init(userAnswer);
 
         const emails = knwlInstance.get('emails');
@@ -111,13 +115,5 @@ answerFetch();
 3. IF email address is valid- take the chunk of domain and store is as variable // DONE 
 4 The scrapper fetches the website address and establishes connection // DONE 
 5. The website iterates through the website and searches for e-mail addresses (us) // DONE 
-6. The email addresses are parsed and logged to the console.  // DONE 
-
-
-Additonal objectives 
-1. Provide date when the scrape was performed // TODO
-2. Transform the data fetched into more readable data (JSON.Stringify) // TODO 
-3. Add comments on the technologies used // TODO 
-4. Add automatic tests // TODO 
-5. Add README.md for documentation // TODO
+6. The email addresses are parsed and logged to the console.  // DONE
 */
