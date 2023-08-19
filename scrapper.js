@@ -1,6 +1,6 @@
 // Additonal objectives 
-// 1. Provide date when the scrape was performed //TODO
-// 2. Transform the data fetched into more readable data (JSON.Stringify) // TODO 
+// 1. Provide date when the scrape was performed // DONE
+// 2. Transform the data fetched into more readable data (JSON.Stringify) // DONE 
 // 3. Add comments on the technologies used // TODO 
 // 4. Add automatic tests // TODO 
 // 5. Add README.md for documentation // TODO
@@ -68,6 +68,9 @@ async function Scrapper(userAnswer) {
             const uniquePhoneNumbers = new Set(phoneNumbers.map(phone => phone.phone));
             const uniqueAddresses = new Set(addresses.map(adr => adr.place));
 
+            const currentDate = new Date();
+            console.log('Data scraping performed on:', currentDate.toLocaleString());
+        
             console.log('Scraped data:');
             Array.from(uniqueEmailAddresses).length > 0 ? console.log(`Emails found:${uniqueEmailAddresses.size} ->`, Array.from(uniqueEmailAddresses).join(', ')) : console.log('No results for emails have been found.');
             Array.from(uniquePhoneNumbers).length > 0 ? console.log(`Phones found:${uniquePhoneNumbers.size} ->`, Array.from(uniquePhoneNumbers).join(', ')) : console.log('No results for phone numbers have been found.');
