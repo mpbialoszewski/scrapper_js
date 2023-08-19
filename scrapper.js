@@ -1,5 +1,5 @@
 // Additonal objectives 
-// 1. Provide date when the scrape was performed // TODO
+// 1. Provide date when the scrape was performed //TODO
 // 2. Transform the data fetched into more readable data (JSON.Stringify) // TODO 
 // 3. Add comments on the technologies used // TODO 
 // 4. Add automatic tests // TODO 
@@ -7,7 +7,7 @@
 // */
 
 
-const axios = require('axios');
+const axios = require('axios'); 
 const cheerio = require('cheerio');
 const readline = require('readline');
 
@@ -112,8 +112,8 @@ answerFetch();
 
 1. User provides the e-mail address as string literal // DONE 
 2. Checking if the input provided is a valid e-mail address, if not - return error and come back to previous task  // DONE 
-3. IF email address is valid- take the chunk of domain and store is as variable // DONE 
-4 The scrapper fetches the website address and establishes connection // DONE 
-5. The website iterates through the website and searches for e-mail addresses (us) // DONE 
-6. The email addresses are parsed and logged to the console.  // DONE
+3. If email address is valid- take the chunk of domain and store it as a variable // DONE 
+4. The scrapper fetches the website address based on that variable and establishes connection (axios) // DONE 
+5. Knwl.js iterates through the website and searches for e-mail addresses, phones and addresses // DONE 
+6. The data is parsed and logged to the console.  // DONE
 */
