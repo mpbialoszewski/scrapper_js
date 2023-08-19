@@ -2,40 +2,43 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const readline = require('readline');
 
-var Knwl = require('knwl.js');
-
-let userAnswer;
-let emailAddresses = [];
+const Knwl = require('knwl.js');
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-  });
+});
 
-
-  function extractDomainName(email) {
+function extractDomainName(email) {
     const knwlInstance = new Knwl();
     knwlInstance.init(email);
-    
+
     const emails = knwlInstance.get('emails');
     if (emails.length === 1) {
-      const parts = emails[0].address.split('@');
-      console.log(parts)
-      if (parts.length === 2) {
-        return parts[1];
-      }
-        emailAddresses.push(email.address);
+        const parts = emails[0].address.split('@');
+        if (parts.length === 2) {
+            return parts[1];
+        }
     }
+    return null;
 }
-async function Scrapper(userAnswer){
 
-    try{
+async function Scrapper(userAnswer) {
+    try {
         let startTime = performance.now();
         const domainName = extractDomainName(userAnswer);
+
+        if (!domainName) {
+            console.error('Invalid email address provided. Please try again.');
+            answerFetch();
+            return;
+        }
+
         const response = await axios.get(`https://${domainName}`);
-        console.log(`Response:${response.status}`)
-        // Check if the response status is successful (2xx)
+        console.log(`Response: ${response.status}`);
+
         if (response.status >= 200 && response.status < 300) {
+            console.log(`Email provided: ${userAnswer} belongs to domain ${domainName}`);
             const html = response.data;
             const $ = cheerio.load(html);
             const htmlText = $('body').text();
@@ -44,52 +47,62 @@ async function Scrapper(userAnswer){
             knwlInstance.init(htmlText);
 
             const emails = knwlInstance.get('emails');
-            const emailAddresses = emails.map(email => email.address);
-            if (emailAddresses.length > 0){
-              console.log('Scraped email addresses:', emailAddresses);
-            } else 
-            {
-              console.error('No email addresses found related to that domain. Please try again');
-              answerFetch();
-            }
-          }
+            const phoneNumbers = knwlInstance.get('phones');
+            const addresses = knwlInstance.get('places');
 
-        answerFetch
- 
-        console.log(`Email provided: ${userAnswer} belongs to domain ${domainName}`);
+            const uniqueEmailAddresses = new Set(emails.map(email => email.address));
+            const uniquePhoneNumbers = new Set(phoneNumbers.map(phone => phone.address));
+            const uniqueAddresses = new Set(addresses.map(adr => adr.address));
+
+            // const results  = -[uniqueEmailAddresses, uniquePhoneNumbers, uniqueAddresses]
+
+            console.log('Scraped data:');
+            Array.from(uniqueEmailAddresses).length > 0 ? console.log('Emails found:', Array.from(uniqueEmailAddresses)) : console.log('No emails found.');
+            Array.from(uniquePhoneNumbers).length > 0 ? console.log('Phones found:', Array.from(uniquePhoneNumbers)) : console.log('No phone numbers found.');
+            Array.from(uniqueAddresses).length > 0 ? console.log('Addresses found :', Array.from(uniqueAddresses)) : console.log('No places/addresses found.');
+
+
+            // console.log('Phones:', Array.from(uniquePhoneNumbers));
+            // console.log('Addresses:', Array.from(uniqueAddresses));
+
+
+
+                // console.error('No results found related to that domain. Please try again');
+
+        }
+
+        
         const endTime = performance.now();
         const duration = endTime - startTime;
-        
-    const delay = pr => new Promise ( resolve => setTimeout(resolve,pr));
-delay(duration).then(()=>{
-    console.log(`Time spent ${duration.toFixed(2)} miliseconds`)
-    answerFetch();
-    
-});
-    } catch (error) {
-      console.error('Failed to fetch website:', error.message)
-      console.log('Please check if the input provided is correct and try again.');
-      answerFetch();
-    }
 
+        const delay = pr => new Promise(resolve => setTimeout(resolve, pr));
+        delay(duration).then(() => {
+            console.log(`Time spent ${duration.toFixed(2)} milliseconds`);
+            answerFetch();
+        });
+    } catch (error) {
+        console.error('Failed to fetch website:', error.message);
+        console.log('Please check if the input provided is correct and try again.');
+        answerFetch();
+    }
 }
+
 function answerFetch() {
     rl.question('Please enter e-mail address: ', (userAnswer) => {
-      const knwlInstance = new Knwl();
-      knwlInstance.init(userAnswer);
-  
-      const emails = knwlInstance.get('emails');
-      if (emails.length === 1 && emails[0].address === userAnswer) {
-        Scrapper(userAnswer);
-      } else {
-        console.log('Incorrect email address provided. Please try again');
-        answerFetch();
-      }
+        const knwlInstance = new Knwl();
+        knwlInstance.init(userAnswer);
+
+        const emails = knwlInstance.get('emails');
+        if (emails.length === 1 && emails[0].address === userAnswer) {
+            Scrapper(userAnswer);
+        } else {
+            console.log('Incorrect email address provided. Please try again');
+            answerFetch();
+        }
     });
-  }
+}
 
 answerFetch();
-
 
 /* Objectives 
 
